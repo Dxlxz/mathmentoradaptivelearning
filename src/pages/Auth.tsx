@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { GraduationCap, Building, Mail, User, Rocket, Shield, ArrowRight, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
 
 const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -19,6 +20,49 @@ const Auth = () => {
   const [grade, setGrade] = useState<string>("");
   const [institution, setInstitution] = useState("");
   const { toast } = useToast();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Handle hash fragment for magic link authentication
+    const handleHashFragment = async () => {
+      try {
+        const hash = window.location.hash;
+        if (hash && hash.includes('access_token')) {
+          // Convert hash fragment to query parameters
+          const params = new URLSearchParams(
+            hash.substring(1) // Remove the # character
+          );
+          
+          const accessToken = params.get('access_token');
+          const refreshToken = params.get('refresh_token');
+          
+          if (accessToken && refreshToken) {
+            const { error } = await supabase.auth.setSession({
+              access_token: accessToken,
+              refresh_token: refreshToken
+            });
+            
+            if (error) throw error;
+            
+            // Clear the hash fragment
+            window.location.hash = '';
+            
+            // Redirect to the appropriate page
+            navigate('/');
+          }
+        }
+      } catch (error) {
+        console.error('Error handling magic link:', error);
+        toast({
+          title: "Authentication Error",
+          description: "There was an error logging you in. Please try again.",
+          variant: "destructive",
+        });
+      }
+    };
+
+    handleHashFragment();
+  }, [navigate, toast]);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -227,10 +271,11 @@ const Auth = () => {
   };
 
   return (
-    <div className={cn("min-h-screen flex items-center justify-center transition-colors duration-500", bgColor)}>
+    <div className={cn("min-h-screen flex items-center justify-center transition-colors duration-500", 
+      role === "student" ? "bg-purple-50" : "bg-slate-50")}>
       <Card className={cn(
         "w-full max-w-md animate-fade-in shadow-lg",
-        isStudent ? "border-purple-100" : "border-slate-200"
+        role === "student" ? "border-purple-100" : "border-slate-200"
       )}>
         <form onSubmit={handleSignIn} className="relative">
           {renderStep()}
