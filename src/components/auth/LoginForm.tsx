@@ -10,9 +10,10 @@ import { cn } from "@/lib/utils";
 
 interface LoginFormProps {
   onLoadingChange?: (isLoading: boolean) => void;
+  onForgotPassword?: () => void;
 }
 
-export const LoginForm = ({ onLoadingChange }: LoginFormProps) => {
+export const LoginForm = ({ onLoadingChange, onForgotPassword }: LoginFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -152,9 +153,11 @@ export const LoginForm = ({ onLoadingChange }: LoginFormProps) => {
           </label>
         </div>
         <Button 
+          type="button"
           variant="link" 
           className="text-sm px-0 font-medium text-slate-600 hover:text-slate-900" 
           disabled={isLoading}
+          onClick={onForgotPassword}
         >
           Forgot password?
         </Button>

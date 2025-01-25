@@ -2,11 +2,25 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { LoginForm } from "@/components/auth/LoginForm";
 import { SignUpForm } from "@/components/auth/SignUpForm";
+import { ForgotPasswordForm } from "@/components/auth/ForgotPasswordForm";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 
 const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+
+  if (showForgotPassword) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-slate-50 to-slate-100 p-4">
+        <Card className="w-full max-w-md shadow-xl animate-fade-in border-slate-200">
+          <CardContent className="pt-6">
+            <ForgotPasswordForm onLoadingChange={setIsLoading} />
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-slate-50 to-slate-100 p-4">
@@ -22,8 +36,8 @@ const Auth = () => {
         <CardContent>
           <Tabs defaultValue="login" className="space-y-6">
             <TabsList className="grid w-full grid-cols-2 h-12">
-              <TabsTrigger 
-                value="login" 
+              <TabsTrigger
+                value="login"
                 className={cn(
                   "data-[state=active]:font-medium text-sm",
                   "data-[state=active]:bg-white data-[state=active]:text-slate-900",
@@ -33,8 +47,8 @@ const Auth = () => {
               >
                 Sign In
               </TabsTrigger>
-              <TabsTrigger 
-                value="register" 
+              <TabsTrigger
+                value="register"
                 className={cn(
                   "data-[state=active]:font-medium text-sm",
                   "data-[state=active]:bg-white data-[state=active]:text-slate-900",
@@ -45,17 +59,20 @@ const Auth = () => {
                 Create Account
               </TabsTrigger>
             </TabsList>
-            <TabsContent 
-              value="login" 
+            <TabsContent
+              value="login"
               className={cn(
                 "animate-in fade-in-50 duration-500",
                 isLoading && "pointer-events-none opacity-50"
               )}
             >
-              <LoginForm onLoadingChange={setIsLoading} />
+              <LoginForm 
+                onLoadingChange={setIsLoading} 
+                onForgotPassword={() => setShowForgotPassword(true)}
+              />
             </TabsContent>
-            <TabsContent 
-              value="register" 
+            <TabsContent
+              value="register"
               className={cn(
                 "animate-in fade-in-50 duration-500",
                 isLoading && "pointer-events-none opacity-50"
