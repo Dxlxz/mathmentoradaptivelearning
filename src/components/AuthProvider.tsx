@@ -53,7 +53,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       // Handle auth state changes
       if (event === "SIGNED_IN") {
-        navigate(session?.user.user_metadata.role === "student" ? "/learn" : "/dashboard");
+        navigate("/");
       } else if (event === "SIGNED_OUT") {
         navigate("/auth");
       }
@@ -75,7 +75,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (error) throw error;
       setProfile(data);
     } catch (error) {
-      // Keep only critical error logging
       if (error instanceof Error) {
         throw new Error(`Error fetching profile: ${error.message}`);
       }
