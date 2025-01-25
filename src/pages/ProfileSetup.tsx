@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ProfileCompletion } from "@/components/auth/ProfileCompletion";
 
 const ProfileSetup = () => {
   return (
@@ -10,7 +11,7 @@ const ProfileSetup = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div>Profile setup form will go here</div>
+          <ProfileCompletion />
         </CardContent>
       </Card>
     </div>

@@ -3,8 +3,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { AuthProvider, useAuth } from "@/components/auth/AuthContext";
-import ProtectedRoute from "@/components/auth/ProtectedRoute";
+import { AuthProvider, useAuth } from "@/components/AuthProvider";
+import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import ProfileSetup from "./pages/ProfileSetup";
@@ -34,11 +34,9 @@ const App = () => (
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route element={<ProtectedRoute />}>
               <Route path="/profile-setup" element={<ProfileSetup />} />
-              <Route path="/" element={
-                <ProfileCompletionCheck>
-                  <Index />
-                </ProfileCompletionCheck>
-              } />
+              <Route element={<ProfileCompletionCheck children={<Index />} />}>
+                <Route path="/" element={<Index />} />
+              </Route>
             </Route>
             <Route path="*" element={<Navigate to="/auth" replace />} />
           </Routes>
