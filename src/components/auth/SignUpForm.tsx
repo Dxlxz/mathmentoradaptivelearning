@@ -49,13 +49,13 @@ export const SignUpForm = ({ onLoadingChange }: SignUpFormProps) => {
     onLoadingChange?.(true);
 
     try {
+      // Only pass the absolute minimum required metadata
       const defaultRole: AppRole = "student";
       const { data: { user }, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: {
-            name: email.split('@')[0],
             role: defaultRole,
           },
           emailRedirectTo: `${window.location.origin}/auth/callback`,
