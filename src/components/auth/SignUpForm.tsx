@@ -51,8 +51,8 @@ export const SignUpForm = ({ onLoadingChange }: SignUpFormProps) => {
         password,
         options: {
           data: {
-            name: email.split('@')[0], // Default name from email
-            role: 'student', // Default role
+            name: email.split('@')[0],
+            role: 'student',
           },
           emailRedirectTo: `${window.location.origin}/auth/callback`,
         },
@@ -66,8 +66,8 @@ export const SignUpForm = ({ onLoadingChange }: SignUpFormProps) => {
       });
       
       navigate("/profile-setup");
-    } catch (error: any) {
-      console.error("Signup error:", error);
+    } catch (error) {
+      // Only log critical errors that affect user experience
       toast({
         title: "Error",
         description: error.message,

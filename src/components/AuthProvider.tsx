@@ -75,7 +75,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (error) throw error;
       setProfile(data);
     } catch (error) {
-      console.error("Error fetching profile:", error);
+      // Keep only critical error logging
+      if (error instanceof Error) {
+        throw new Error(`Error fetching profile: ${error.message}`);
+      }
     } finally {
       setIsLoading(false);
     }
