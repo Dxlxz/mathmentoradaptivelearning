@@ -13,12 +13,12 @@ import type { Database } from "@/integrations/supabase/types";
 
 type GradeLevel = Database["public"]["Enums"]["grade_level"];
 type Institution = Database["public"]["Enums"]["institution_type"];
-type Role = Database["public"]["Enums"]["app_role"];
+type AppRole = Database["public"]["Enums"]["app_role"];
 
 export const ProfileCompletion = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [name, setName] = useState("");
-  const [role, setRole] = useState<Role>("student");
+  const [role, setRole] = useState<AppRole>("student");
   const [grade, setGrade] = useState<GradeLevel>("K1");
   const [institution, setInstitution] = useState<Institution>("Others");
   const { toast } = useToast();
@@ -47,7 +47,7 @@ export const ProfileCompletion = () => {
       });
       
       navigate("/");
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Error",
         description: error.message,

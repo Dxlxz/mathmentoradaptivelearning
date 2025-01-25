@@ -7,6 +7,9 @@ import { Mail, Lock, Loader2, AlertCircle } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
+import type { Database } from "@/integrations/supabase/types";
+
+type AppRole = Database["public"]["Enums"]["app_role"];
 
 interface SignUpFormProps {
   onLoadingChange?: (isLoading: boolean) => void;
@@ -46,15 +49,14 @@ export const SignUpForm = ({ onLoadingChange }: SignUpFormProps) => {
     onLoadingChange?.(true);
 
     try {
-      // Create the user with proper metadata
       const { data: { user }, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: {
             email: email,
-            name: email.split('@')[0], // Default name from email
-            role: 'student' as const, // Default role
+            name: email.split('@')[0],
+            role: 'student' as AppRole,
             email_verified: false,
             profile_completed: false
           },
