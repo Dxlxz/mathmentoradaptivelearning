@@ -2,17 +2,15 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Mail, Lock } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Mail, Lock, Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
 interface LoginFormProps {
-  onToggleForm: () => void;
-  className?: string;
+  onLoadingChange?: (isLoading: boolean) => void;
 }
 
-export const LoginForm = ({ onToggleForm, className }: LoginFormProps) => {
+export const LoginForm = ({ onLoadingChange }: LoginFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -21,6 +19,7 @@ export const LoginForm = ({ onToggleForm, className }: LoginFormProps) => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    onLoadingChange?.(true);
 
     try {
       const { error } = await supabase.auth.signInWithPassword({
@@ -42,69 +41,66 @@ export const LoginForm = ({ onToggleForm, className }: LoginFormProps) => {
       });
     } finally {
       setIsLoading(false);
+      onLoadingChange?.(false);
     }
   };
 
   return (
-    <form onSubmit={handleLogin} className={cn("space-y-6", className)} aria-label="Sign in form">
-      <fieldset disabled={isLoading} className="space-y-6">
-        <div className="space-y-4">
-          <h2 className="text-lg font-semibold">Account Credentials</h2>
-          <div className="space-y-2">
-            <Label htmlFor="email">
-              <span className="flex items-center gap-2">
-                <Mail className="w-4 h-4" />
-                Email
-              </span>
-            </Label>
-            <Input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              placeholder="your@email.com"
-              className="transition-all"
-              aria-required="true"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="password">
-              <span className="flex items-center gap-2">
-                <Lock className="w-4 h-4" />
-                Password
-              </span>
-            </Label>
-            <Input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              placeholder="••••••••"
-              className="transition-all"
-              aria-required="true"
-            />
-          </div>
-        </div>
+    <form onSubmit={handleLogin} className="space-y-4" aria-label="Sign in form">
+      <div className="space-y-2">
+        <Label htmlFor="email">
+          <span className="flex items-center gap-2">
+            <Mail className="w-4 h-4" />
+            Email
+          </span>
+        </Label>
+        <Input
+          id="email"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          placeholder="your@email.com"
+          className="transition-all"
+          aria-required="true"
+          disabled={isLoading}
+        />
+      </div>
 
-        <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? (
-            <>
-              <span className="animate-pulse">Signing in...</span>
-            </>
-          ) : (
-            "Sign In"
-          )}
-        </Button>
+      <div className="space-y-2">
+        <Label htmlFor="password">
+          <span className="flex items-center gap-2">
+            <Lock className="w-4 h-4" />
+            Password
+          </span>
+        </Label>
+        <Input
+          id="password"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          placeholder="••••••••"
+          className="transition-all"
+          aria-required="true"
+          disabled={isLoading}
+        />
+      </div>
 
-        <p className="text-sm text-center text-muted-foreground">
-          Don't have an account?{" "}
-          <Button variant="link" onClick={onToggleForm} className="p-0">
-            Sign up
-          </Button>
-        </p>
-      </fieldset>
+      <Button type="submit" className="w-full" disabled={isLoading}>
+        {isLoading ? (
+          <span className="flex items-center gap-2">
+            <Loader2 className="w-4 h-4 animate-spin" />
+            Signing in...
+          </span>
+        ) : (
+          "Sign In"
+        )}
+      </Button>
+
+      <Button variant="link" className="w-full text-sm text-muted-foreground" disabled={isLoading}>
+        Forgot your password?
+      </Button>
     </form>
   );
 };

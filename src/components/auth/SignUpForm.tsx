@@ -2,19 +2,18 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Mail, Lock, AlertCircle } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Mail, Lock, Loader2, AlertCircle } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Progress } from "@/components/ui/progress";
 import { useNavigate } from "react-router-dom";
+import { cn } from "@/lib/utils";
 
 interface SignUpFormProps {
-  onToggleForm: () => void;
-  className?: string;
+  onLoadingChange?: (isLoading: boolean) => void;
 }
 
-export const SignUpForm = ({ onToggleForm, className }: SignUpFormProps) => {
+export const SignUpForm = ({ onLoadingChange }: SignUpFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -42,6 +41,7 @@ export const SignUpForm = ({ onToggleForm, className }: SignUpFormProps) => {
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    onLoadingChange?.(true);
 
     try {
       if (password.length < 8) {
@@ -69,77 +69,72 @@ export const SignUpForm = ({ onToggleForm, className }: SignUpFormProps) => {
       });
     } finally {
       setIsLoading(false);
+      onLoadingChange?.(false);
     }
   };
 
   return (
-    <form onSubmit={handleSignUp} className={cn("space-y-6", className)} aria-label="Sign up form">
-      <fieldset disabled={isLoading} className="space-y-6">
-        <div className="space-y-4">
-          <h2 className="text-lg font-semibold">Create Your Account</h2>
-          <div className="space-y-2">
-            <Label htmlFor="email">
-              <span className="flex items-center gap-2">
-                <Mail className="w-4 h-4" />
-                Email
-              </span>
-            </Label>
-            <Input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              placeholder="your@email.com"
-              className="transition-all"
-              aria-required="true"
-            />
-          </div>
+    <form onSubmit={handleSignUp} className="space-y-4" aria-label="Sign up form">
+      <div className="space-y-2">
+        <Label htmlFor="email">
+          <span className="flex items-center gap-2">
+            <Mail className="w-4 h-4" />
+            Email
+          </span>
+        </Label>
+        <Input
+          id="email"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          placeholder="your@email.com"
+          className="transition-all"
+          aria-required="true"
+          disabled={isLoading}
+        />
+      </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="password">
-              <span className="flex items-center gap-2">
-                <Lock className="w-4 h-4" />
-                Password
-              </span>
-            </Label>
-            <Input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              placeholder="••••••••"
-              className="transition-all"
-              aria-required="true"
-            />
-            <div className="space-y-1">
-              <Progress value={passwordStrength} className={cn("h-2 transition-all", getPasswordStrengthColor(passwordStrength))} />
-              <p className="text-xs text-muted-foreground flex items-center gap-1">
-                <AlertCircle className="w-3 h-3" />
-                Password must be at least 8 characters
-              </p>
-            </div>
-          </div>
+      <div className="space-y-2">
+        <Label htmlFor="password">
+          <span className="flex items-center gap-2">
+            <Lock className="w-4 h-4" />
+            Password
+          </span>
+        </Label>
+        <Input
+          id="password"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          placeholder="••••••••"
+          className="transition-all"
+          aria-required="true"
+          disabled={isLoading}
+        />
+        <div className="space-y-1">
+          <Progress 
+            value={passwordStrength} 
+            className={cn("h-2 transition-all", getPasswordStrengthColor(passwordStrength))} 
+          />
+          <p className="text-xs text-muted-foreground flex items-center gap-1">
+            <AlertCircle className="w-3 h-3" />
+            Password must be at least 8 characters
+          </p>
         </div>
+      </div>
 
-        <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? (
-            <>
-              <span className="animate-pulse">Creating account...</span>
-            </>
-          ) : (
-            "Create Account"
-          )}
-        </Button>
-
-        <p className="text-sm text-center text-muted-foreground">
-          Already have an account?{" "}
-          <Button variant="link" onClick={onToggleForm} className="p-0">
-            Sign in
-          </Button>
-        </p>
-      </fieldset>
+      <Button type="submit" className="w-full" disabled={isLoading}>
+        {isLoading ? (
+          <span className="flex items-center gap-2">
+            <Loader2 className="w-4 h-4 animate-spin" />
+            Creating account...
+          </span>
+        ) : (
+          "Create Account"
+        )}
+      </Button>
     </form>
   );
 };
