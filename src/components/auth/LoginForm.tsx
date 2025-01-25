@@ -46,48 +46,65 @@ export const LoginForm = ({ onToggleForm, className }: LoginFormProps) => {
   };
 
   return (
-    <form onSubmit={handleLogin} className={cn("space-y-4", className)}>
-      <div className="space-y-2">
-        <Label htmlFor="email">
-          <span className="flex items-center gap-2">
-            <Mail className="w-4 h-4" />
-            Email
-          </span>
-        </Label>
-        <Input
-          id="email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          placeholder="your@email.com"
-        />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="password">
-          <span className="flex items-center gap-2">
-            <Lock className="w-4 h-4" />
-            Password
-          </span>
-        </Label>
-        <Input
-          id="password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          placeholder="••••••••"
-        />
-      </div>
-      <Button type="submit" className="w-full" disabled={isLoading}>
-        {isLoading ? "Signing in..." : "Sign In"}
-      </Button>
-      <p className="text-sm text-center text-muted-foreground">
-        Don't have an account?{" "}
-        <Button variant="link" onClick={onToggleForm} className="p-0">
-          Sign up
+    <form onSubmit={handleLogin} className={cn("space-y-6", className)} aria-label="Sign in form">
+      <fieldset disabled={isLoading} className="space-y-6">
+        <div className="space-y-4">
+          <h2 className="text-lg font-semibold">Account Credentials</h2>
+          <div className="space-y-2">
+            <Label htmlFor="email">
+              <span className="flex items-center gap-2">
+                <Mail className="w-4 h-4" />
+                Email
+              </span>
+            </Label>
+            <Input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              placeholder="your@email.com"
+              className="transition-all"
+              aria-required="true"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="password">
+              <span className="flex items-center gap-2">
+                <Lock className="w-4 h-4" />
+                Password
+              </span>
+            </Label>
+            <Input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              placeholder="••••••••"
+              className="transition-all"
+              aria-required="true"
+            />
+          </div>
+        </div>
+
+        <Button type="submit" className="w-full" disabled={isLoading}>
+          {isLoading ? (
+            <>
+              <span className="animate-pulse">Signing in...</span>
+            </>
+          ) : (
+            "Sign In"
+          )}
         </Button>
-      </p>
+
+        <p className="text-sm text-center text-muted-foreground">
+          Don't have an account?{" "}
+          <Button variant="link" onClick={onToggleForm} className="p-0">
+            Sign up
+          </Button>
+        </p>
+      </fieldset>
     </form>
   );
 };
