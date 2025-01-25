@@ -1,69 +1,20 @@
-import { Apple, Book, Calculator, Shapes, Rocket } from "lucide-react";
-import { useAuth } from "@/components/AuthProvider";
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from "@/components/ui/sidebar";
+import { useAuth } from "@/components/auth/AuthContext";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
-const gradeIcons = {
-  "K1": Apple,
-  "G2": Book,
-  "G3": Calculator,
-  "G4": Shapes,
-  "G5": Rocket,
-} as const;
+const GradeNavigation = () => {
+  const { user, profile } = useAuth();
+  const navigate = useNavigate();
 
-const grades = ["K1", "G2", "G3", "G4", "G5"] as const;
+  useEffect(() => {
+    if (!user) {
+      navigate("/auth");
+    } else if (profile && !profile.profile_completed) {
+      navigate("/profile-setup");
+    }
+  }, [user, profile, navigate]);
 
-export function GradeNavigation() {
-  const { profile } = useAuth();
+  return null; // or any other JSX you want to render
+};
 
-  if (!profile) return null;
-
-  return (
-    <Sidebar>
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>
-            {profile.role === "student" ? "Grade Selection" : "Class Management"}
-          </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {profile.role === "student" ? (
-                grades.map((grade) => {
-                  const Icon = gradeIcons[grade];
-                  const isCurrentGrade = profile.grade === grade;
-                  
-                  return (
-                    <SidebarMenuItem key={grade}>
-                      <SidebarMenuButton
-                        tooltip={`${grade} Grade`}
-                        isActive={isCurrentGrade}
-                      >
-                        <Icon />
-                        <span>{grade}</span>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  );
-                })
-              ) : (
-                <SidebarMenuItem>
-                  <SidebarMenuButton tooltip="Manage Classes">
-                    <Shapes />
-                    <span>Class Management</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              )}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
-    </Sidebar>
-  );
-}
+export default GradeNavigation;
