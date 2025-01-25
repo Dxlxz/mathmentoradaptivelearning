@@ -1,25 +1,11 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { AuthForm } from "@/components/auth/forms/AuthForm";
-import { ForgotPasswordForm } from "@/components/auth/ForgotPasswordForm";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 
 const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [showForgotPassword, setShowForgotPassword] = useState(false);
-
-  if (showForgotPassword) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-slate-50 to-slate-100 p-4">
-        <Card className="w-full max-w-md shadow-xl animate-fade-in border-slate-200">
-          <CardContent className="pt-6">
-            <ForgotPasswordForm onLoadingChange={setIsLoading} />
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-slate-50 to-slate-100 p-4">
@@ -67,8 +53,7 @@ const Auth = () => {
             >
               <AuthForm 
                 type="login"
-                onLoadingChange={setIsLoading} 
-                onForgotPassword={() => setShowForgotPassword(true)}
+                onLoadingChange={setIsLoading}
               />
             </TabsContent>
             <TabsContent

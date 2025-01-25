@@ -44,7 +44,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
 
       if (event === "SIGNED_IN") {
-        navigate(session?.user.user_metadata.role === "student" ? "/learn" : "/dashboard");
+        navigate("/");
       } else if (event === "SIGNED_OUT") {
         navigate("/auth");
       }
