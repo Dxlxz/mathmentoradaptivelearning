@@ -6,7 +6,7 @@ import { Mail, Loader2, AlertCircle, ArrowLeft } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 interface ForgotPasswordFormProps {
   onLoadingChange?: (isLoading: boolean) => void;
@@ -84,6 +84,7 @@ export const ForgotPasswordForm = ({ onLoadingChange }: ForgotPasswordFormProps)
             variant="outline"
             className="w-full"
             onClick={() => navigate("/auth")}
+            aria-label="Return to sign in page"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Sign In
@@ -116,9 +117,11 @@ export const ForgotPasswordForm = ({ onLoadingChange }: ForgotPasswordFormProps)
                 error && "border-destructive focus-visible:ring-destructive"
               )}
               disabled={isLoading}
+              aria-invalid={!!error}
+              aria-describedby={error ? "email-error" : undefined}
             />
             {error && (
-              <p className="text-sm text-destructive flex items-center gap-1">
+              <p id="email-error" className="text-sm text-destructive flex items-center gap-1">
                 <AlertCircle className="w-4 h-4" />
                 {error}
               </p>
@@ -143,6 +146,7 @@ export const ForgotPasswordForm = ({ onLoadingChange }: ForgotPasswordFormProps)
               className="w-full"
               onClick={() => navigate("/auth")}
               disabled={isLoading}
+              aria-label="Return to sign in page"
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Sign In

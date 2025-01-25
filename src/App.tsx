@@ -38,7 +38,7 @@ const App = () => (
                 <Route path="/" element={<Index />} />
               </Route>
             </Route>
-            <Route path="*" element={<div>Not Found</div>} />
+            <Route path="*" element={<Navigate to="/auth" replace />} />
           </Routes>
         </AuthProvider>
       </BrowserRouter>
