@@ -9,7 +9,42 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          created_at: string
+          email: string
+          grade: Database["public"]["Enums"]["grade_level"] | null
+          id: string
+          institution: string | null
+          is_2fa_setup: boolean | null
+          name: string
+          role: Database["public"]["Enums"]["app_role"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          grade?: Database["public"]["Enums"]["grade_level"] | null
+          id: string
+          institution?: string | null
+          is_2fa_setup?: boolean | null
+          name: string
+          role: Database["public"]["Enums"]["app_role"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          grade?: Database["public"]["Enums"]["grade_level"] | null
+          id?: string
+          institution?: string | null
+          is_2fa_setup?: boolean | null
+          name?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -18,7 +53,8 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      app_role: "student" | "mentor"
+      grade_level: "K1" | "G2" | "G3" | "G4" | "G5"
     }
     CompositeTypes: {
       [_ in never]: never
