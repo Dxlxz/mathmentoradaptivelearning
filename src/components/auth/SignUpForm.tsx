@@ -49,6 +49,7 @@ export const SignUpForm = ({ onLoadingChange }: SignUpFormProps) => {
     onLoadingChange?.(true);
 
     try {
+      const defaultRole: AppRole = "student";
       const { data: { user }, error } = await supabase.auth.signUp({
         email,
         password,
@@ -56,7 +57,7 @@ export const SignUpForm = ({ onLoadingChange }: SignUpFormProps) => {
           data: {
             email: email,
             name: email.split('@')[0],
-            role: 'student' as AppRole,
+            role: defaultRole,
             email_verified: false,
             profile_completed: false
           },
