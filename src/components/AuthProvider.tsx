@@ -10,6 +10,8 @@ interface AuthContextType {
     grade?: string;
     institution?: string;
     name: string;
+    email_verified: boolean;
+    profile_completed: boolean;
   } | null;
   isLoading: boolean;
 }

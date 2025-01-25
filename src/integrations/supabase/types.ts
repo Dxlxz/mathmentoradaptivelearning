@@ -13,36 +13,42 @@ export type Database = {
         Row: {
           created_at: string
           email: string
+          email_verified: boolean | null
           grade: Database["public"]["Enums"]["grade_level"] | null
           id: string
-          institution: string | null
+          institution: Database["public"]["Enums"]["institution_type"] | null
           is_2fa_setup: boolean | null
           last_sign_in_at: string | null
           name: string
+          profile_completed: boolean | null
           role: Database["public"]["Enums"]["app_role"]
           updated_at: string
         }
         Insert: {
           created_at?: string
           email: string
+          email_verified?: boolean | null
           grade?: Database["public"]["Enums"]["grade_level"] | null
           id: string
-          institution?: string | null
+          institution?: Database["public"]["Enums"]["institution_type"] | null
           is_2fa_setup?: boolean | null
           last_sign_in_at?: string | null
           name: string
+          profile_completed?: boolean | null
           role: Database["public"]["Enums"]["app_role"]
           updated_at?: string
         }
         Update: {
           created_at?: string
           email?: string
+          email_verified?: boolean | null
           grade?: Database["public"]["Enums"]["grade_level"] | null
           id?: string
-          institution?: string | null
+          institution?: Database["public"]["Enums"]["institution_type"] | null
           is_2fa_setup?: boolean | null
           last_sign_in_at?: string | null
           name?: string
+          profile_completed?: boolean | null
           role?: Database["public"]["Enums"]["app_role"]
           updated_at?: string
         }
@@ -58,6 +64,10 @@ export type Database = {
     Enums: {
       app_role: "student" | "mentor"
       grade_level: "K1" | "G2" | "G3" | "G4" | "G5"
+      institution_type:
+        | "Sekolah Kebangsaan Math Mentor"
+        | "Tadika Universiti Malaysia Sabah"
+        | "Others"
     }
     CompositeTypes: {
       [_ in never]: never

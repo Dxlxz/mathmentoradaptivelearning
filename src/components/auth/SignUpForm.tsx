@@ -21,7 +21,7 @@ export const SignUpForm = ({ onToggleForm, className }: SignUpFormProps) => {
   const [name, setName] = useState("");
   const [role, setRole] = useState<"student" | "mentor">("student");
   const [grade, setGrade] = useState<string>("");
-  const [institution, setInstitution] = useState("");
+  const [institution, setInstitution] = useState<string>("Others");
   const { toast } = useToast();
 
   const handleSignUp = async (e: React.FormEvent) => {
@@ -119,14 +119,16 @@ export const SignUpForm = ({ onToggleForm, className }: SignUpFormProps) => {
       ) : (
         <div className="space-y-2">
           <Label htmlFor="institution">Institution</Label>
-          <Input
-            id="institution"
-            type="text"
-            value={institution}
-            onChange={(e) => setInstitution(e.target.value)}
-            required
-            placeholder="School or organization"
-          />
+          <Select value={institution} onValueChange={setInstitution}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select your institution" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Sekolah Kebangsaan Math Mentor">Sekolah Kebangsaan Math Mentor</SelectItem>
+              <SelectItem value="Tadika Universiti Malaysia Sabah">Tadika Universiti Malaysia Sabah</SelectItem>
+              <SelectItem value="Others">Others</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       )}
 
