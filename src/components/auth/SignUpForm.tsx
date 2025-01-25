@@ -18,8 +18,24 @@ export const SignUpForm = ({ onLoadingChange }: SignUpFormProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [hasInteractedWithPassword, setHasInteractedWithPassword] = useState(false);
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  const validateForm = () => {
+    const newErrors: { email?: string; password?: string } = {};
+    
+    if (!email) newErrors.email = "Email is required";
+    else if (!/\S+@\S+\.\S+/.test(email)) newErrors.email = "Invalid email format";
+    
+    if (!password) newErrors.password = "Password is required";
+    else if (calculatePasswordStrength(password) < 75) {
+      newErrors.password = "Password does not meet all requirements";
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const calculatePasswordStrength = (pass: string): number => {
     let strength = 0;
@@ -39,14 +55,13 @@ export const SignUpForm = ({ onLoadingChange }: SignUpFormProps) => {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!validateForm()) return;
+    
     setIsLoading(true);
     onLoadingChange?.(true);
 
     try {
-      if (password.length < 8) {
-        throw new Error("Password must be at least 8 characters long");
-      }
-
       const { error } = await supabase.auth.signUp({
         email,
         password,
@@ -72,81 +87,115 @@ export const SignUpForm = ({ onLoadingChange }: SignUpFormProps) => {
     }
   };
 
-  const handlePasswordFocus = () => {
-    setHasInteractedWithPassword(true);
-  };
-
-  const passwordStrength = calculatePasswordStrength(password);
-
   return (
-    <form onSubmit={handleSignUp} className="space-y-4 animate-fade-in" aria-label="Sign up form">
+    <form onSubmit={handleSignUp} className="space-y-5 animate-fade-in" aria-label="Sign up form">
       <div className="space-y-2">
-        <Label htmlFor="email" className="text-sm font-medium">
-          <span className="flex items-center gap-2">
-            <Mail className="w-4 h-4" />
-            Email
-          </span>
+        <Label 
+          htmlFor="signup-email" 
+          className={cn(
+            "text-sm font-medium flex items-center gap-2",
+            errors.email && "text-destructive"
+          )}
+        >
+          <Mail className="w-4 h-4" />
+          Email
         </Label>
         <Input
-          id="email"
+          id="signup-email"
           type="email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
+          onChange={(e) => {
+            setEmail(e.target.value);
+            if (errors.email) setErrors({ ...errors, email: undefined });
+          }}
           placeholder="your@email.com"
-          className="transition-all"
-          aria-required="true"
+          className={cn(
+            "transition-all duration-200",
+            errors.email && "border-destructive focus-visible:ring-destructive"
+          )}
+          aria-invalid={!!errors.email}
           disabled={isLoading}
         />
+        {errors.email && (
+          <p className="text-sm text-destructive flex items-center gap-1 animate-fade-in">
+            <AlertCircle className="w-4 h-4" />
+            {errors.email}
+          </p>
+        )}
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="password" className="text-sm font-medium">
-          <span className="flex items-center gap-2">
-            <Lock className="w-4 h-4" />
-            Password
-          </span>
+        <Label 
+          htmlFor="signup-password" 
+          className={cn(
+            "text-sm font-medium flex items-center gap-2",
+            errors.password && "text-destructive"
+          )}
+        >
+          <Lock className="w-4 h-4" />
+          Password
         </Label>
         <Input
-          id="password"
+          id="signup-password"
           type="password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          onFocus={handlePasswordFocus}
-          required
+          onChange={(e) => {
+            setPassword(e.target.value);
+            if (errors.password) setErrors({ ...errors, password: undefined });
+          }}
+          onFocus={() => setHasInteractedWithPassword(true)}
           placeholder="••••••••"
           className={cn(
-            "transition-all",
-            hasInteractedWithPassword && passwordStrength < 75 && "border-orange-500 focus-visible:ring-orange-500"
+            "transition-all duration-200",
+            hasInteractedWithPassword && calculatePasswordStrength(password) < 75 && "border-orange-500 focus-visible:ring-orange-500",
+            errors.password && "border-destructive focus-visible:ring-destructive"
           )}
-          aria-required="true"
+          aria-invalid={!!errors.password}
           disabled={isLoading}
         />
+        {errors.password && (
+          <p className="text-sm text-destructive flex items-center gap-1 animate-fade-in">
+            <AlertCircle className="w-4 h-4" />
+            {errors.password}
+          </p>
+        )}
         {hasInteractedWithPassword && (
-          <div className="space-y-2 animate-fade-in">
+          <div className="space-y-3 animate-fade-in">
             <Progress 
-              value={passwordStrength} 
+              value={calculatePasswordStrength(password)} 
               className={cn(
                 "h-2 transition-all", 
-                getPasswordStrengthColor(passwordStrength)
+                getPasswordStrengthColor(calculatePasswordStrength(password))
               )} 
             />
-            <div className="space-y-1">
-              <p className="text-xs text-muted-foreground flex items-center gap-1">
+            <div className="space-y-2">
+              <p className="text-xs text-slate-500 flex items-center gap-1">
                 <AlertCircle className="w-3 h-3" />
                 Password requirements:
               </p>
-              <ul className="text-xs text-muted-foreground space-y-1 list-disc list-inside">
-                <li className={cn(password.length >= 8 && "text-green-500")}>
+              <ul className="text-xs space-y-1 list-disc list-inside">
+                <li className={cn(
+                  "text-slate-500",
+                  password.length >= 8 && "text-green-500"
+                )}>
                   At least 8 characters
                 </li>
-                <li className={cn(password.match(/[A-Z]/) && "text-green-500")}>
+                <li className={cn(
+                  "text-slate-500",
+                  password.match(/[A-Z]/) && "text-green-500"
+                )}>
                   One uppercase letter
                 </li>
-                <li className={cn(password.match(/[0-9]/) && "text-green-500")}>
+                <li className={cn(
+                  "text-slate-500",
+                  password.match(/[0-9]/) && "text-green-500"
+                )}>
                   One number
                 </li>
-                <li className={cn(password.match(/[^A-Za-z0-9]/) && "text-green-500")}>
+                <li className={cn(
+                  "text-slate-500",
+                  password.match(/[^A-Za-z0-9]/) && "text-green-500"
+                )}>
                   One special character
                 </li>
               </ul>
@@ -157,8 +206,8 @@ export const SignUpForm = ({ onLoadingChange }: SignUpFormProps) => {
 
       <Button 
         type="submit" 
-        className="w-full" 
-        disabled={isLoading || (hasInteractedWithPassword && passwordStrength < 75)}
+        className="w-full h-11" 
+        disabled={isLoading || (hasInteractedWithPassword && calculatePasswordStrength(password) < 75)}
       >
         {isLoading ? (
           <span className="flex items-center gap-2">

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Mail, Lock, Loader2 } from "lucide-react";
+import { Mail, Lock, Loader2, AlertCircle } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -16,10 +16,26 @@ export const LoginForm = ({ onLoadingChange }: LoginFormProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
   const { toast } = useToast();
+
+  const validateForm = () => {
+    const newErrors: { email?: string; password?: string } = {};
+    
+    if (!email) newErrors.email = "Email is required";
+    else if (!/\S+@\S+\.\S+/.test(email)) newErrors.email = "Invalid email format";
+    
+    if (!password) newErrors.password = "Password is required";
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!validateForm()) return;
+    
     setIsLoading(true);
     onLoadingChange?.(true);
 
@@ -48,45 +64,75 @@ export const LoginForm = ({ onLoadingChange }: LoginFormProps) => {
   };
 
   return (
-    <form onSubmit={handleLogin} className="space-y-4 animate-fade-in" aria-label="Sign in form">
+    <form onSubmit={handleLogin} className="space-y-5 animate-fade-in" aria-label="Sign in form">
       <div className="space-y-2">
-        <Label htmlFor="email" className="text-sm font-medium">
-          <span className="flex items-center gap-2">
-            <Mail className="w-4 h-4" />
-            Email
-          </span>
+        <Label 
+          htmlFor="email" 
+          className={cn(
+            "text-sm font-medium flex items-center gap-2",
+            errors.email && "text-destructive"
+          )}
+        >
+          <Mail className="w-4 h-4" />
+          Email
         </Label>
         <Input
           id="email"
           type="email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
+          onChange={(e) => {
+            setEmail(e.target.value);
+            if (errors.email) setErrors({ ...errors, email: undefined });
+          }}
           placeholder="your@email.com"
-          className="transition-all"
-          aria-required="true"
+          className={cn(
+            "transition-all duration-200",
+            errors.email && "border-destructive focus-visible:ring-destructive"
+          )}
+          aria-invalid={!!errors.email}
           disabled={isLoading}
         />
+        {errors.email && (
+          <p className="text-sm text-destructive flex items-center gap-1 animate-fade-in">
+            <AlertCircle className="w-4 h-4" />
+            {errors.email}
+          </p>
+        )}
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="password" className="text-sm font-medium">
-          <span className="flex items-center gap-2">
-            <Lock className="w-4 h-4" />
-            Password
-          </span>
+        <Label 
+          htmlFor="password" 
+          className={cn(
+            "text-sm font-medium flex items-center gap-2",
+            errors.password && "text-destructive"
+          )}
+        >
+          <Lock className="w-4 h-4" />
+          Password
         </Label>
         <Input
           id="password"
           type="password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
+          onChange={(e) => {
+            setPassword(e.target.value);
+            if (errors.password) setErrors({ ...errors, password: undefined });
+          }}
           placeholder="••••••••"
-          className="transition-all"
-          aria-required="true"
+          className={cn(
+            "transition-all duration-200",
+            errors.password && "border-destructive focus-visible:ring-destructive"
+          )}
+          aria-invalid={!!errors.password}
           disabled={isLoading}
         />
+        {errors.password && (
+          <p className="text-sm text-destructive flex items-center gap-1 animate-fade-in">
+            <AlertCircle className="w-4 h-4" />
+            {errors.password}
+          </p>
+        )}
       </div>
 
       <div className="flex items-center justify-between">
@@ -104,12 +150,20 @@ export const LoginForm = ({ onLoadingChange }: LoginFormProps) => {
             Remember me
           </label>
         </div>
-        <Button variant="link" className="text-sm px-0" disabled={isLoading}>
+        <Button 
+          variant="link" 
+          className="text-sm px-0 font-medium text-slate-600 hover:text-slate-900" 
+          disabled={isLoading}
+        >
           Forgot password?
         </Button>
       </div>
 
-      <Button type="submit" className="w-full" disabled={isLoading}>
+      <Button 
+        type="submit" 
+        className="w-full h-11" 
+        disabled={isLoading}
+      >
         {isLoading ? (
           <span className="flex items-center gap-2">
             <Loader2 className="w-4 h-4 animate-spin" />
