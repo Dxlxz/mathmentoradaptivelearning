@@ -55,11 +55,8 @@ export const SignUpForm = ({ onLoadingChange }: SignUpFormProps) => {
         password,
         options: {
           data: {
-            email: email,
             name: email.split('@')[0],
             role: defaultRole,
-            email_verified: false,
-            profile_completed: false
           },
           emailRedirectTo: `${window.location.origin}/auth/callback`,
         },
