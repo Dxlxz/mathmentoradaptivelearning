@@ -6,6 +6,7 @@ import { Mail, Lock, Loader2, AlertCircle } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Checkbox } from "@/components/ui/checkbox";
+import { cn } from "@/lib/utils";
 
 interface LoginFormProps {
   onLoadingChange?: (isLoading: boolean) => void;
