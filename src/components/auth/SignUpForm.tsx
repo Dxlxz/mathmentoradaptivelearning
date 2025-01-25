@@ -46,13 +46,17 @@ export const SignUpForm = ({ onLoadingChange }: SignUpFormProps) => {
     onLoadingChange?.(true);
 
     try {
+      // Create the user with proper metadata
       const { data: { user }, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: {
-            name: email.split('@')[0],
-            role: 'student',
+            email: email,
+            name: email.split('@')[0], // Default name from email
+            role: 'student' as const, // Default role
+            email_verified: false,
+            profile_completed: false
           },
           emailRedirectTo: `${window.location.origin}/auth/callback`,
         },
