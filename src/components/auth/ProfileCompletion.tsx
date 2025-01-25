@@ -65,7 +65,7 @@ export const ProfileCompletion = () => {
           <h2 className="text-lg font-semibold">Choose your role</h2>
           <RadioGroup
             value={role}
-            onValueChange={(value: Role) => setRole(value)}
+            onValueChange={(value: AppRole) => setRole(value)}
             className="grid grid-cols-2 gap-4"
           >
             <div className={cn(
