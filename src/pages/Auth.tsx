@@ -6,7 +6,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { GraduationCap, Building, Mail, User, Rocket, Shield, ArrowRight, ArrowLeft } from "lucide-react";
+import { GraduationCap, Building, Mail, User, Rocket, Shield, ArrowRight, ArrowLeft, Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
@@ -16,78 +16,51 @@ const Auth = () => {
   const [step, setStep] = useState(1);
   const [role, setRole] = useState<"student" | "mentor">("student");
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [grade, setGrade] = useState<string>("");
   const [institution, setInstitution] = useState("");
+  const [isSignUp, setIsSignUp] = useState(true);
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    // Handle hash fragment for magic link authentication
-    const handleHashFragment = async () => {
-      try {
-        const hash = window.location.hash;
-        if (hash && hash.includes('access_token')) {
-          // Convert hash fragment to query parameters
-          const params = new URLSearchParams(
-            hash.substring(1) // Remove the # character
-          );
-          
-          const accessToken = params.get('access_token');
-          const refreshToken = params.get('refresh_token');
-          
-          if (accessToken && refreshToken) {
-            const { error } = await supabase.auth.setSession({
-              access_token: accessToken,
-              refresh_token: refreshToken
-            });
-            
-            if (error) throw error;
-            
-            // Clear the hash fragment
-            window.location.hash = '';
-            
-            // Redirect to the appropriate page
-            navigate('/');
-          }
-        }
-      } catch (error) {
-        console.error('Error handling magic link:', error);
-        toast({
-          title: "Authentication Error",
-          description: "There was an error logging you in. Please try again.",
-          variant: "destructive",
-        });
-      }
-    };
-
-    handleHashFragment();
-  }, [navigate, toast]);
-
-  const handleSignIn = async (e: React.FormEvent) => {
+  const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
-      const metadata = {
-        name,
-        role,
-        ...(role === "student" ? { grade } : { institution }),
-      };
+      if (isSignUp) {
+        const { error: signUpError } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              name,
+              role,
+              ...(role === "student" ? { grade } : { institution }),
+            },
+          },
+        });
 
-      const { error } = await supabase.auth.signInWithOtp({
-        email,
-        options: {
-          data: metadata,
-        },
-      });
+        if (signUpError) throw signUpError;
 
-      if (error) throw error;
+        toast({
+          title: "Account created!",
+          description: "Please check your email to verify your account.",
+        });
+      } else {
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
 
-      toast({
-        title: "Magic link sent!",
-        description: "Check your email for the login link.",
-      });
+        if (signInError) throw signInError;
+
+        toast({
+          title: "Welcome back!",
+          description: "You have successfully signed in.",
+        });
+      }
     } catch (error) {
       toast({
         title: "Error",
@@ -100,7 +73,7 @@ const Auth = () => {
   };
 
   const nextStep = () => {
-    if ((step === 2 && !name) || (step === 3 && !email)) {
+    if ((step === 2 && !name) || (step === 3 && !email) || (step === 3 && !password)) {
       toast({
         title: "Required field",
         description: "Please fill in all required fields to continue.",
@@ -127,34 +100,49 @@ const Auth = () => {
           <CardContent className="space-y-4">
             <CardHeader className="px-0">
               <CardTitle className={cn("text-2xl font-bold text-center", accentColor)}>
-                Welcome to Math Mentor!
+                {isSignUp ? "Welcome to Math Mentor!" : "Welcome Back!"}
               </CardTitle>
               <CardDescription className="text-center">
-                Let's get started! Are you a student or a mentor?
+                {isSignUp ? "Let's get started! Are you a student or a mentor?" : "Sign in to continue learning"}
               </CardDescription>
             </CardHeader>
-            <RadioGroup
-              value={role}
-              onValueChange={(value: "student" | "mentor") => setRole(value)}
-              className="grid grid-cols-2 gap-4"
-            >
-              <div className={cn(
-                "relative flex flex-col items-center space-y-2 rounded-xl border-2 p-4 cursor-pointer transition-all",
-                isStudent ? "border-purple-200 hover:border-purple-300" : "border-slate-200 hover:border-slate-300"
-              )}>
-                <RadioGroupItem value="student" id="student" className="sr-only" />
-                <Rocket className={cn("w-8 h-8", isStudent ? "text-purple-500" : "text-slate-400")} />
-                <Label htmlFor="student" className="font-medium cursor-pointer">Student</Label>
+            {isSignUp ? (
+              <RadioGroup
+                value={role}
+                onValueChange={(value: "student" | "mentor") => setRole(value)}
+                className="grid grid-cols-2 gap-4"
+              >
+                <div className={cn(
+                  "relative flex flex-col items-center space-y-2 rounded-xl border-2 p-4 cursor-pointer transition-all",
+                  isStudent ? "border-purple-200 hover:border-purple-300" : "border-slate-200 hover:border-slate-300"
+                )}>
+                  <RadioGroupItem value="student" id="student" className="sr-only" />
+                  <Rocket className={cn("w-8 h-8", isStudent ? "text-purple-500" : "text-slate-400")} />
+                  <Label htmlFor="student" className="font-medium cursor-pointer">Student</Label>
+                </div>
+                <div className={cn(
+                  "relative flex flex-col items-center space-y-2 rounded-xl border-2 p-4 cursor-pointer transition-all",
+                  !isStudent ? "border-slate-200 hover:border-slate-300" : "border-purple-200 hover:border-purple-300"
+                )}>
+                  <RadioGroupItem value="mentor" id="mentor" className="sr-only" />
+                  <Shield className={cn("w-8 h-8", !isStudent ? "text-slate-600" : "text-slate-400")} />
+                  <Label htmlFor="mentor" className="font-medium cursor-pointer">Mentor</Label>
+                </div>
+              </RadioGroup>
+            ) : (
+              <div className="text-center">
+                <Button
+                  variant="link"
+                  onClick={() => {
+                    setIsSignUp(true);
+                    setStep(1);
+                  }}
+                  className={accentColor}
+                >
+                  Need an account? Sign up
+                </Button>
               </div>
-              <div className={cn(
-                "relative flex flex-col items-center space-y-2 rounded-xl border-2 p-4 cursor-pointer transition-all",
-                !isStudent ? "border-slate-200 hover:border-slate-300" : "border-purple-200 hover:border-purple-300"
-              )}>
-                <RadioGroupItem value="mentor" id="mentor" className="sr-only" />
-                <Shield className={cn("w-8 h-8", !isStudent ? "text-slate-600" : "text-slate-400")} />
-                <Label htmlFor="mentor" className="font-medium cursor-pointer">Mentor</Label>
-              </div>
-            </RadioGroup>
+            )}
           </CardContent>
         );
       case 2:
@@ -237,31 +225,65 @@ const Auth = () => {
           <CardContent className="space-y-4">
             <CardHeader className="px-0">
               <CardTitle className={cn("text-2xl font-bold", accentColor)}>
-                Almost there!
+                {isSignUp ? "Almost there!" : "Welcome Back!"}
               </CardTitle>
               <CardDescription>
-                Enter your email to receive a magic link for signing in
+                {isSignUp ? "Create your account credentials" : "Sign in to your account"}
               </CardDescription>
             </CardHeader>
-            <div className="space-y-2">
-              <Label htmlFor="email" className={accentColor}>
-                <span className="flex items-center gap-2">
-                  <Mail className="w-4 h-4" />
-                  Email address
-                </span>
-              </Label>
-              <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className={cn(
-                  "transition-all duration-300",
-                  isStudent ? "focus:ring-purple-500" : "focus:ring-slate-500"
-                )}
-                placeholder="your@email.com"
-              />
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email" className={accentColor}>
+                  <span className="flex items-center gap-2">
+                    <Mail className="w-4 h-4" />
+                    Email address
+                  </span>
+                </Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className={cn(
+                    "transition-all duration-300",
+                    isStudent ? "focus:ring-purple-500" : "focus:ring-slate-500"
+                  )}
+                  placeholder="your@email.com"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password" className={accentColor}>
+                  <span className="flex items-center gap-2">
+                    <Lock className="w-4 h-4" />
+                    Password
+                  </span>
+                </Label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className={cn(
+                    "transition-all duration-300",
+                    isStudent ? "focus:ring-purple-500" : "focus:ring-slate-500"
+                  )}
+                  placeholder="••••••••"
+                />
+              </div>
+              {!isSignUp && (
+                <Button
+                  variant="link"
+                  onClick={() => {
+                    setIsSignUp(true);
+                    setStep(1);
+                  }}
+                  className={cn("w-full", accentColor)}
+                >
+                  Don't have an account? Sign up
+                </Button>
+              )}
             </div>
           </CardContent>
         );
@@ -277,10 +299,10 @@ const Auth = () => {
         "w-full max-w-md animate-fade-in shadow-lg",
         role === "student" ? "border-purple-100" : "border-slate-200"
       )}>
-        <form onSubmit={handleSignIn} className="relative">
+        <form onSubmit={handleAuth} className="relative">
           {renderStep()}
           <CardFooter className="flex justify-between mt-6">
-            {step > 1 && (
+            {((isSignUp && step > 1) || (!isSignUp && step > 1)) && (
               <Button
                 type="button"
                 variant="outline"
@@ -294,7 +316,7 @@ const Auth = () => {
                 Back
               </Button>
             )}
-            {step < 3 ? (
+            {((isSignUp && step < 3) || (!isSignUp && step < 3)) ? (
               <Button
                 type="button"
                 className={cn(
@@ -315,7 +337,7 @@ const Auth = () => {
                 )}
                 disabled={isLoading}
               >
-                {isLoading ? "Sending magic link..." : "Get Magic Link"}
+                {isLoading ? "Processing..." : isSignUp ? "Create Account" : "Sign In"}
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             )}

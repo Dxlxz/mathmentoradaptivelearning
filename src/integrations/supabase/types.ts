@@ -17,6 +17,7 @@ export type Database = {
           id: string
           institution: string | null
           is_2fa_setup: boolean | null
+          last_sign_in_at: string | null
           name: string
           role: Database["public"]["Enums"]["app_role"]
           updated_at: string
@@ -28,6 +29,7 @@ export type Database = {
           id: string
           institution?: string | null
           is_2fa_setup?: boolean | null
+          last_sign_in_at?: string | null
           name: string
           role: Database["public"]["Enums"]["app_role"]
           updated_at?: string
@@ -39,6 +41,7 @@ export type Database = {
           id?: string
           institution?: string | null
           is_2fa_setup?: boolean | null
+          last_sign_in_at?: string | null
           name?: string
           role?: Database["public"]["Enums"]["app_role"]
           updated_at?: string
