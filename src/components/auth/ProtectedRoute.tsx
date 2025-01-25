@@ -1,8 +1,9 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { useAuth } from "./AuthProvider";
+import { useAuth } from "./AuthContext";
+import type { AppRole } from "@/lib/auth/types";
 
 interface ProtectedRouteProps {
-  role?: "student" | "mentor";
+  role?: AppRole;
 }
 
 const ProtectedRoute = ({ role }: ProtectedRouteProps) => {

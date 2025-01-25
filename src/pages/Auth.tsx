@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { LoginForm } from "@/components/auth/forms/LoginForm";
-import { SignUpForm } from "@/components/auth/forms/SignUpForm";
+import { AuthForm } from "@/components/auth/forms/AuthForm";
 import { ForgotPasswordForm } from "@/components/auth/ForgotPasswordForm";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
@@ -48,7 +47,7 @@ const Auth = () => {
                 Sign In
               </TabsTrigger>
               <TabsTrigger
-                value="register"
+                value="signup"
                 className={cn(
                   "data-[state=active]:font-medium text-sm",
                   "data-[state=active]:bg-white data-[state=active]:text-slate-900",
@@ -66,19 +65,23 @@ const Auth = () => {
                 isLoading && "pointer-events-none opacity-50"
               )}
             >
-              <LoginForm 
+              <AuthForm 
+                type="login"
                 onLoadingChange={setIsLoading} 
                 onForgotPassword={() => setShowForgotPassword(true)}
               />
             </TabsContent>
             <TabsContent
-              value="register"
+              value="signup"
               className={cn(
                 "animate-in fade-in-50 duration-500",
                 isLoading && "pointer-events-none opacity-50"
               )}
             >
-              <SignUpForm onLoadingChange={setIsLoading} />
+              <AuthForm 
+                type="signup"
+                onLoadingChange={setIsLoading}
+              />
             </TabsContent>
           </Tabs>
         </CardContent>
