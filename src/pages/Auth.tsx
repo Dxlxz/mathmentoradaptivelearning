@@ -7,6 +7,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { GraduationCap, Building, Mail, User } from "lucide-react";
 
 const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -53,63 +54,88 @@ const Auth = () => {
     }
   };
 
+  const bgColor = role === "student" ? "bg-purple-50" : "bg-slate-50";
+  const cardBg = role === "student" ? "bg-white" : "bg-white";
+  const accentColor = role === "student" ? "text-purple-600" : "text-slate-600";
+  const buttonColor = role === "student" 
+    ? "bg-purple-600 hover:bg-purple-700" 
+    : "bg-slate-800 hover:bg-slate-900";
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50">
-      <div className="w-full max-w-md space-y-8 p-8 bg-white rounded-xl shadow-lg">
-        <div className="text-center">
-          <h2 className="text-3xl font-bold text-slate-900">Welcome to Math Mentor</h2>
-          <p className="mt-2 text-slate-600">Sign in or create an account</p>
+    <div className={`min-h-screen flex items-center justify-center ${bgColor} transition-colors duration-500`}>
+      <div className={`w-full max-w-md space-y-8 p-8 ${cardBg} rounded-xl shadow-lg transition-all duration-500 animate-fade-in`}>
+        <div className="text-center space-y-2">
+          <h2 className={`text-3xl font-bold ${accentColor} transition-colors duration-500`}>
+            Welcome to Math Mentor
+          </h2>
+          <p className="text-slate-600">Sign in or create an account</p>
         </div>
 
         <form onSubmit={handleSignIn} className="mt-8 space-y-6">
-          <div className="space-y-4">
-            <div>
-              <Label>I am a...</Label>
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <Label className={accentColor}>I am a...</Label>
               <RadioGroup
                 value={role}
                 onValueChange={(value: "student" | "mentor") => setRole(value)}
-                className="flex gap-4 mt-2"
+                className="flex gap-6 mt-2"
               >
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="student" id="student" />
-                  <Label htmlFor="student">Student</Label>
+                  <Label htmlFor="student" className="flex items-center gap-2">
+                    <GraduationCap className="w-4 h-4" />
+                    Student
+                  </Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="mentor" id="mentor" />
-                  <Label htmlFor="mentor">Mentor</Label>
+                  <Label htmlFor="mentor" className="flex items-center gap-2">
+                    <Building className="w-4 h-4" />
+                    Mentor
+                  </Label>
                 </div>
               </RadioGroup>
             </div>
 
-            <div>
-              <Label htmlFor="email">Email address</Label>
+            <div className="space-y-2">
+              <Label htmlFor="email" className={accentColor}>
+                <span className="flex items-center gap-2">
+                  <Mail className="w-4 h-4" />
+                  Email address
+                </span>
+              </Label>
               <Input
                 id="email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="mt-1"
+                className="transition-all duration-300 focus:ring-2 focus:ring-purple-500"
               />
             </div>
 
-            <div>
-              <Label htmlFor="name">Full name</Label>
+            <div className="space-y-2">
+              <Label htmlFor="name" className={accentColor}>
+                <span className="flex items-center gap-2">
+                  <User className="w-4 h-4" />
+                  Full name
+                </span>
+              </Label>
               <Input
                 id="name"
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
-                className="mt-1"
+                className="transition-all duration-300 focus:ring-2 focus:ring-purple-500"
               />
             </div>
 
             {role === "student" ? (
-              <div>
-                <Label htmlFor="grade">Grade</Label>
+              <div className="space-y-2">
+                <Label htmlFor="grade" className={accentColor}>Grade</Label>
                 <Select value={grade} onValueChange={setGrade} required>
-                  <SelectTrigger className="mt-1">
+                  <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select your grade" />
                   </SelectTrigger>
                   <SelectContent>
@@ -122,21 +148,25 @@ const Auth = () => {
                 </Select>
               </div>
             ) : (
-              <div>
-                <Label htmlFor="institution">Institution</Label>
+              <div className="space-y-2">
+                <Label htmlFor="institution" className={accentColor}>Institution</Label>
                 <Input
                   id="institution"
                   type="text"
                   value={institution}
                   onChange={(e) => setInstitution(e.target.value)}
                   required
-                  className="mt-1"
+                  className="transition-all duration-300 focus:ring-2 focus:ring-slate-500"
                 />
               </div>
             )}
           </div>
 
-          <Button type="submit" className="w-full" disabled={isLoading}>
+          <Button
+            type="submit"
+            className={`w-full ${buttonColor} text-white transition-colors duration-300`}
+            disabled={isLoading}
+          >
             {isLoading ? "Sending magic link..." : "Continue with Email"}
           </Button>
         </form>
