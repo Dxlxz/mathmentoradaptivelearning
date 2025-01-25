@@ -17,6 +17,7 @@ export const SignUpForm = ({ onLoadingChange }: SignUpFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [hasInteractedWithPassword, setHasInteractedWithPassword] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -73,8 +74,12 @@ export const SignUpForm = ({ onLoadingChange }: SignUpFormProps) => {
     }
   };
 
+  const handlePasswordFocus = () => {
+    setHasInteractedWithPassword(true);
+  };
+
   return (
-    <form onSubmit={handleSignUp} className="space-y-4" aria-label="Sign up form">
+    <form onSubmit={handleSignUp} className="space-y-4 animate-fade-in" aria-label="Sign up form">
       <div className="space-y-2">
         <Label htmlFor="email">
           <span className="flex items-center gap-2">
@@ -107,22 +112,28 @@ export const SignUpForm = ({ onLoadingChange }: SignUpFormProps) => {
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          onFocus={handlePasswordFocus}
           required
           placeholder="••••••••"
           className="transition-all"
           aria-required="true"
           disabled={isLoading}
         />
-        <div className="space-y-1">
-          <Progress 
-            value={passwordStrength} 
-            className={cn("h-2 transition-all", getPasswordStrengthColor(passwordStrength))} 
-          />
-          <p className="text-xs text-muted-foreground flex items-center gap-1">
-            <AlertCircle className="w-3 h-3" />
-            Password must be at least 8 characters
-          </p>
-        </div>
+        {hasInteractedWithPassword && (
+          <div className="space-y-1 animate-fade-in">
+            <Progress 
+              value={passwordStrength} 
+              className={cn(
+                "h-2 transition-all", 
+                getPasswordStrengthColor(passwordStrength)
+              )} 
+            />
+            <p className="text-xs text-muted-foreground flex items-center gap-1">
+              <AlertCircle className="w-3 h-3" />
+              Password must be at least 8 characters
+            </p>
+          </div>
+        )}
       </div>
 
       <Button type="submit" className="w-full" disabled={isLoading}>
