@@ -65,6 +65,12 @@ export const SignUpForm = ({ onLoadingChange }: SignUpFormProps) => {
       const { error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          data: {
+            name: email.split('@')[0], // Default name from email
+            role: 'student', // Default role
+          },
+        },
       });
 
       if (error) throw error;
@@ -75,7 +81,8 @@ export const SignUpForm = ({ onLoadingChange }: SignUpFormProps) => {
       });
       
       navigate("/profile-setup");
-    } catch (error) {
+    } catch (error: any) {
+      console.error("Signup error:", error);
       toast({
         title: "Error",
         description: error.message,
