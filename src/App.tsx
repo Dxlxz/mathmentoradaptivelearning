@@ -32,7 +32,7 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route element={<ProtectedRoute />}>
               <Route path="/profile-setup" element={<ProfileSetup />} />
-              <Route element={<ProfileCompletionCheck />}>
+              <Route element={<ProfileCompletionCheck children={<Index />} />}>
                 <Route path="/" element={<Index />} />
               </Route>
             </Route>

@@ -9,13 +9,18 @@ import { cn } from "@/lib/utils";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
+import type { Database } from "@/integrations/supabase/types";
+
+type GradeLevel = Database["public"]["Enums"]["grade_level"];
+type Institution = Database["public"]["Enums"]["institution_type"];
+type Role = Database["public"]["Enums"]["app_role"];
 
 export const ProfileCompletion = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [name, setName] = useState("");
-  const [role, setRole] = useState<"student" | "mentor">("student");
-  const [grade, setGrade] = useState<string>("");
-  const [institution, setInstitution] = useState<string>("Others");
+  const [role, setRole] = useState<Role>("student");
+  const [grade, setGrade] = useState<GradeLevel>("K1");
+  const [institution, setInstitution] = useState<Institution>("Others");
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -60,7 +65,7 @@ export const ProfileCompletion = () => {
           <h2 className="text-lg font-semibold">Choose your role</h2>
           <RadioGroup
             value={role}
-            onValueChange={(value: "student" | "mentor") => setRole(value)}
+            onValueChange={(value: Role) => setRole(value)}
             className="grid grid-cols-2 gap-4"
           >
             <div className={cn(
@@ -106,7 +111,7 @@ export const ProfileCompletion = () => {
           {role === "student" ? (
             <div className="space-y-2">
               <Label htmlFor="grade">Grade Level</Label>
-              <Select value={grade} onValueChange={setGrade} required>
+              <Select value={grade} onValueChange={(value: GradeLevel) => setGrade(value)} required>
                 <SelectTrigger>
                   <SelectValue placeholder="Select your grade" />
                 </SelectTrigger>
@@ -122,7 +127,7 @@ export const ProfileCompletion = () => {
           ) : (
             <div className="space-y-2">
               <Label htmlFor="institution">Institution</Label>
-              <Select value={institution} onValueChange={setInstitution} required>
+              <Select value={institution} onValueChange={(value: Institution) => setInstitution(value)} required>
                 <SelectTrigger>
                   <SelectValue placeholder="Select your institution" />
                 </SelectTrigger>
