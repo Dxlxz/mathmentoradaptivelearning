@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Mail, Lock, Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface LoginFormProps {
   onLoadingChange?: (isLoading: boolean) => void;
@@ -14,6 +15,7 @@ export const LoginForm = ({ onLoadingChange }: LoginFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const { toast } = useToast();
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -46,9 +48,9 @@ export const LoginForm = ({ onLoadingChange }: LoginFormProps) => {
   };
 
   return (
-    <form onSubmit={handleLogin} className="space-y-4" aria-label="Sign in form">
+    <form onSubmit={handleLogin} className="space-y-4 animate-fade-in" aria-label="Sign in form">
       <div className="space-y-2">
-        <Label htmlFor="email">
+        <Label htmlFor="email" className="text-sm font-medium">
           <span className="flex items-center gap-2">
             <Mail className="w-4 h-4" />
             Email
@@ -68,7 +70,7 @@ export const LoginForm = ({ onLoadingChange }: LoginFormProps) => {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="password">
+        <Label htmlFor="password" className="text-sm font-medium">
           <span className="flex items-center gap-2">
             <Lock className="w-4 h-4" />
             Password
@@ -87,6 +89,26 @@ export const LoginForm = ({ onLoadingChange }: LoginFormProps) => {
         />
       </div>
 
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-2">
+          <Checkbox 
+            id="remember" 
+            checked={rememberMe}
+            onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+            disabled={isLoading}
+          />
+          <label
+            htmlFor="remember"
+            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            Remember me
+          </label>
+        </div>
+        <Button variant="link" className="text-sm px-0" disabled={isLoading}>
+          Forgot password?
+        </Button>
+      </div>
+
       <Button type="submit" className="w-full" disabled={isLoading}>
         {isLoading ? (
           <span className="flex items-center gap-2">
@@ -96,10 +118,6 @@ export const LoginForm = ({ onLoadingChange }: LoginFormProps) => {
         ) : (
           "Sign In"
         )}
-      </Button>
-
-      <Button variant="link" className="w-full text-sm text-muted-foreground" disabled={isLoading}>
-        Forgot your password?
       </Button>
     </form>
   );

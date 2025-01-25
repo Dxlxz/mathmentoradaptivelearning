@@ -10,20 +10,20 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">
+      <Card className="w-full max-w-md shadow-lg animate-fade-in">
+        <CardHeader className="space-y-2">
+          <CardTitle className="text-2xl font-bold tracking-tight text-center">
             Math Mentor
           </CardTitle>
-          <CardDescription className="text-center">
+          <CardDescription className="text-center text-base">
             Join our community of learners and mentors
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="login" className="space-y-4">
+          <Tabs defaultValue="login" className="space-y-6">
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="login">Sign In</TabsTrigger>
-              <TabsTrigger value="register">Create Account</TabsTrigger>
+              <TabsTrigger value="login" className="data-[state=active]:font-medium">Sign In</TabsTrigger>
+              <TabsTrigger value="register" className="data-[state=active]:font-medium">Create Account</TabsTrigger>
             </TabsList>
             <TabsContent value="login" className={cn("animate-in fade-in-50", isLoading && "pointer-events-none opacity-50")}>
               <LoginForm onLoadingChange={setIsLoading} />

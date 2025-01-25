@@ -30,8 +30,6 @@ export const SignUpForm = ({ onLoadingChange }: SignUpFormProps) => {
     return strength;
   };
 
-  const passwordStrength = calculatePasswordStrength(password);
-
   const getPasswordStrengthColor = (strength: number) => {
     if (strength <= 25) return "bg-red-500";
     if (strength <= 50) return "bg-orange-500";
@@ -78,10 +76,12 @@ export const SignUpForm = ({ onLoadingChange }: SignUpFormProps) => {
     setHasInteractedWithPassword(true);
   };
 
+  const passwordStrength = calculatePasswordStrength(password);
+
   return (
     <form onSubmit={handleSignUp} className="space-y-4 animate-fade-in" aria-label="Sign up form">
       <div className="space-y-2">
-        <Label htmlFor="email">
+        <Label htmlFor="email" className="text-sm font-medium">
           <span className="flex items-center gap-2">
             <Mail className="w-4 h-4" />
             Email
@@ -101,7 +101,7 @@ export const SignUpForm = ({ onLoadingChange }: SignUpFormProps) => {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="password">
+        <Label htmlFor="password" className="text-sm font-medium">
           <span className="flex items-center gap-2">
             <Lock className="w-4 h-4" />
             Password
@@ -115,12 +115,15 @@ export const SignUpForm = ({ onLoadingChange }: SignUpFormProps) => {
           onFocus={handlePasswordFocus}
           required
           placeholder="••••••••"
-          className="transition-all"
+          className={cn(
+            "transition-all",
+            hasInteractedWithPassword && passwordStrength < 75 && "border-orange-500 focus-visible:ring-orange-500"
+          )}
           aria-required="true"
           disabled={isLoading}
         />
         {hasInteractedWithPassword && (
-          <div className="space-y-1 animate-fade-in">
+          <div className="space-y-2 animate-fade-in">
             <Progress 
               value={passwordStrength} 
               className={cn(
@@ -128,15 +131,35 @@ export const SignUpForm = ({ onLoadingChange }: SignUpFormProps) => {
                 getPasswordStrengthColor(passwordStrength)
               )} 
             />
-            <p className="text-xs text-muted-foreground flex items-center gap-1">
-              <AlertCircle className="w-3 h-3" />
-              Password must be at least 8 characters
-            </p>
+            <div className="space-y-1">
+              <p className="text-xs text-muted-foreground flex items-center gap-1">
+                <AlertCircle className="w-3 h-3" />
+                Password requirements:
+              </p>
+              <ul className="text-xs text-muted-foreground space-y-1 list-disc list-inside">
+                <li className={cn(password.length >= 8 && "text-green-500")}>
+                  At least 8 characters
+                </li>
+                <li className={cn(password.match(/[A-Z]/) && "text-green-500")}>
+                  One uppercase letter
+                </li>
+                <li className={cn(password.match(/[0-9]/) && "text-green-500")}>
+                  One number
+                </li>
+                <li className={cn(password.match(/[^A-Za-z0-9]/) && "text-green-500")}>
+                  One special character
+                </li>
+              </ul>
+            </div>
           </div>
         )}
       </div>
 
-      <Button type="submit" className="w-full" disabled={isLoading}>
+      <Button 
+        type="submit" 
+        className="w-full" 
+        disabled={isLoading || (hasInteractedWithPassword && passwordStrength < 75)}
+      >
         {isLoading ? (
           <span className="flex items-center gap-2">
             <Loader2 className="w-4 h-4 animate-spin" />
