@@ -29,6 +29,7 @@ const Auth = () => {
                   "data-[state=active]:bg-white data-[state=active]:text-slate-900",
                   "transition-all duration-200"
                 )}
+                disabled={isLoading}
               >
                 Sign In
               </TabsTrigger>
@@ -39,6 +40,7 @@ const Auth = () => {
                   "data-[state=active]:bg-white data-[state=active]:text-slate-900",
                   "transition-all duration-200"
                 )}
+                disabled={isLoading}
               >
                 Create Account
               </TabsTrigger>
