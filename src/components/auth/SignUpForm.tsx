@@ -46,13 +46,13 @@ export const SignUpForm = ({ onLoadingChange }: SignUpFormProps) => {
     onLoadingChange?.(true);
 
     try {
-      const { error } = await supabase.auth.signUp({
+      const { data: { user }, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: {
-            name: email.split('@')[0], // Default name from email
-            role: 'student', // Default role
+            name: email.split('@')[0],
+            role: 'student',
           },
           emailRedirectTo: `${window.location.origin}/auth/callback`,
         },
@@ -60,12 +60,13 @@ export const SignUpForm = ({ onLoadingChange }: SignUpFormProps) => {
 
       if (error) throw error;
 
-      toast({
-        title: "Success!",
-        description: "Please check your email to verify your account.",
-      });
-      
-      navigate("/profile-setup");
+      if (user) {
+        toast({
+          title: "Success!",
+          description: "Please check your email to verify your account.",
+        });
+        navigate("/profile-setup");
+      }
     } catch (error: any) {
       console.error("Signup error:", error);
       toast({
